@@ -1,4 +1,5 @@
 import React from 'react';
+import { AddDocumentModal } from './AddDocumentModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -120,10 +121,12 @@ export const DocumentHeader = () => {
           </Button>
         </div>
 
-        <Button variant="gradient" className="whitespace-nowrap">
-          <Plus className="w-4 h-4 mr-2" />
-          Ajouter un document
-        </Button>
+        <AddDocumentModal>
+          <Button variant="gradient" className="whitespace-nowrap">
+            <Plus className="w-4 h-4 mr-2" />
+            Ajouter un document
+          </Button>
+        </AddDocumentModal>
       </div>
 
       {/* Filtres par catégorie */}
