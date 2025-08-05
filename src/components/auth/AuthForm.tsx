@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, FileText, UserPlus, LogIn } from 'lucide-react';
+import { Eye, EyeOff, FileText, UserPlus, LogIn, Mail } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export const AuthForm = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +15,7 @@ export const AuthForm = () => {
   const [displayName, setDisplayName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState('login');
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const { login, signup, isLoading } = useAuth();
   const { toast } = useToast();
 
@@ -53,6 +55,46 @@ export const AuthForm = () => {
         description: "Veuillez vérifier votre email pour confirmer votre compte",
       });
       setActiveTab('login');
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!email) {
+      toast({
+        title: "Email requis",
+        description: "Veuillez saisir votre adresse email",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsResettingPassword(true);
+    
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        toast({
+          title: "Erreur",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Email envoyé",
+          description: "Vérifiez votre boîte mail pour réinitialiser votre mot de passe",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur inattendue s'est produite",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResettingPassword(false);
     }
   };
 
@@ -134,6 +176,26 @@ export const AuthForm = () => {
                     </Button>
                   </div>
                 </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    onClick={handleResetPassword}
+                    disabled={isResettingPassword}
+                    className="px-0 h-auto text-sm text-muted-foreground hover:text-primary"
+                  >
+                    {isResettingPassword ? (
+                      <>
+                        <Mail className="w-3 h-3 mr-1" />
+                        Envoi en cours...
+                      </>
+                    ) : (
+                      "Mot de passe oublié ?"
+                    )}
+                  </Button>
+                </div>
               </CardContent>
               
               <CardFooter>
@@ -202,6 +264,13 @@ export const AuthForm = () => {
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Minimum 6 caractères
+                  </p>
+                </div>
+                
+                <div className="bg-accent/50 p-3 rounded-lg text-sm border">
+                  <p className="text-muted-foreground">
+                    En vous inscrivant, vous recevrez un email de confirmation. 
+                    Cliquez sur le lien pour activer votre compte.
                   </p>
                 </div>
               </CardContent>

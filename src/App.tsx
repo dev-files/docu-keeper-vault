@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { DocumentProvider } from "@/contexts/DocumentContext";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { ResetPassword } from "@/components/auth/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
@@ -22,19 +23,25 @@ const AppContent = () => {
     );
   }
 
-  if (!user) {
-    return <AuthForm />;
-  }
-
   return (
-    <DocumentProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </DocumentProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route 
+          path="/" 
+          element={
+            user ? (
+              <DocumentProvider>
+                <Dashboard />
+              </DocumentProvider>
+            ) : (
+              <AuthForm />
+            )
+          } 
+        />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 
