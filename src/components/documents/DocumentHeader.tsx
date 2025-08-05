@@ -37,7 +37,7 @@ export const DocumentHeader = () => {
     filteredDocuments
   } = useDocuments();
   
-  const { user, logout } = useAuth();
+  const { user, profile, logout } = useAuth();
 
   const handleCategoryFilter = (category: string | null) => {
     setSelectedCategory(category);
@@ -65,13 +65,13 @@ export const DocumentHeader = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center space-x-2">
                 <User className="w-4 h-4" />
-                <span>{user?.name}</span>
+                <span>{profile?.display_name || user?.email?.split('@')[0] || 'Utilisateur'}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>
                 <div>
-                  <p className="font-medium">{user?.name}</p>
+                  <p className="font-medium">{profile?.display_name || user?.email?.split('@')[0] || 'Utilisateur'}</p>
                   <p className="text-sm text-muted-foreground">{user?.email}</p>
                 </div>
               </DropdownMenuLabel>
